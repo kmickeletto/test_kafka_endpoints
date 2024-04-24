@@ -35,6 +35,7 @@ cd test_kafka_endpoints
 
 - `--broker`: Specify the Kafka broker's address. This option can be repeated to specify multiple brokers.
 - `--topic`: Specify the Kafka topic to which the message will be sent.
+- `--file` : File containing the message to send.
 - `--auth`: Enable SASL authentication (must be used with `--username` and `--password`).
 - `--protocol`: Choose the security protocol (`SASL_PLAINTEXT` or `SASL_SSL`). Default is `SASL_PLAINTEXT`.
 - `--mechanism`: Specify the SASL mechanism (`PLAIN`, `SCRAM-SHA-256`, `SCRAM-SHA-512`). Default is `PLAIN`.
