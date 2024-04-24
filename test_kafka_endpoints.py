@@ -26,6 +26,7 @@ def main():
     parser = argparse.ArgumentParser(description='Test connection to one or more Kafka brokers.')
     parser.add_argument('--broker', action='append', dest='broker_list', required=True, help='Kafka broker address, and optionally port :9092. Can be specified multiple times.')
     parser.add_argument('--topic', required=True, help='Destination Kafka topic')
+    parser.add_argument('--file', type=str, help='File containing the message to send')
     parser.add_argument('--auth', action='store_true', help='Use authentication')
     parser.add_argument('--protocol', choices=['SASL_PLAINTEXT', 'SASL_SSL'], default='SASL_PLAINTEXT')
     parser.add_argument('--mechanism', choices=['PLAIN', 'SCRAM-SHA-256', 'SCRAM-SHA-512'], default='PLAIN')
@@ -34,6 +35,7 @@ def main():
     parser.add_argument('-v', '--verbose', action='count', default=0, help='Increase logging verbosity (can be specified multiple times)')
 
     args = parser.parse_args()
+
     if args.auth:
         missing_args = []
         if not args.username:
@@ -44,14 +46,23 @@ def main():
         if missing_args:
             parser.error(f"The following arguments are required with --auth: {' '.join(missing_args)}")
 
-    if os.isatty(sys.stdin.fileno()):
-        sys.exit("Error: This script expects input via stdin")
+    message = None
+    if args.file:
+        if os.path.isfile(args.file) and os.access(args.file, os.R_OK):
+            with open(args.file, 'r') as file:
+                message = file.read().encode('utf-8')
+        else:
+            sys.exit(f"Error: The file {args.file} does not exist or is not readable.")
+    else:
+        if not sys.stdin.isatty():  # Check if data is being piped to stdin
+            message = sys.stdin.read().encode('utf-8')
+        else:
+            sys.exit("Error: No input provided via stdin or --file. Please provide a message to send.")
+
+    if message is None:
+        sys.exit("Error: No message provided to send to the Kafka broker.")
 
     setup_logging(args.verbose)
-    message = sys.stdin.read().encode('utf-8')
-
-    # Set a global socket timeout for DNS resolution
-    socket.setdefaulttimeout(2)  # Timeout for DNS resolution
 
     for current_broker in args.broker_list:
         broker = current_broker if ':' in current_broker else f"{current_broker}:9092"
@@ -62,7 +73,6 @@ def main():
             'max_block_ms': 5000,
         }
 
-        # Update the configuration if authentication is enabled
         if args.auth and args.username and args.password:
             producer_config.update({
                 'security_protocol': args.protocol,
@@ -74,7 +84,7 @@ def main():
         try:
             producer = KafkaProducer(**producer_config)
             future = producer.send(args.topic, value=message)
-            result = future.get(timeout=10)  # Ensures that the future resolves within 10 seconds
+            result = future.get(timeout=10)
             print(f"{broker}: Success")
         except KafkaError as e:
             sys.exit(f"{broker}: Kafka related failure - {e}")
