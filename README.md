@@ -1,4 +1,3 @@
-```markdown
 # Kafka Endpoint Tester
 
 This script, `test_kafka_producer.py`, is designed to test and validate Kafka broker connections prior to configuring these brokers in FortiSIEM. It provides a straightforward method to ensure that the necessary "plumbing" between your application and Kafka brokers is functioning correctly before you proceed with integration into FortiSIEM. This is particularly useful as the FortiSIEM GUI may not provide detailed error messages or troubleshooting information when issues arise with broker connections.
