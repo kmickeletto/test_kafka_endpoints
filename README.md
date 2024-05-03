@@ -7,7 +7,8 @@ This script, `test_kafka_producer.py`, is designed to test and validate Kafka br
 - **Multiple Broker Support**: Test one or multiple brokers by specifying each broker's address.
 - **SASL Authentication**: Supports testing brokers that require SASL authentication with configurable mechanisms such as PLAIN, SCRAM-SHA-256, and SCRAM-SHA-512.
 - **Verbosity Levels**: Adjustable logging verbosity to control the amount of output detail.
-- **Input via STDIN**: Accepts message input through standard input to send to the Kafka broker.
+- **Input via STDIN**: Accepts message input through standard input to send to the Kafka brokers.
+- **Input via file**: Accepts an argument to send the contents of a file to the Kafka brokers.
 
 ## Prerequisites
 
