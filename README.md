@@ -29,7 +29,7 @@ cd test_kafka_endpoints
 1. **Prepare Input**: Pipe in the message you want to send to the Kafka topic via STDIN.
 2. **Run the Script**:
     ```bash
-    echo "Your message here" | python3 test_kafka_producer.py --broker your_broker_address:9092 --topic your_topic_name [additional options]
+    echo "Your message here" | python3 test_kafka_producer.py --broker broker1 --broker2:1234 --topic your_topic_name [additional options]
     ```
 
 ### Command Line Arguments
